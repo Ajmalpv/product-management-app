@@ -1,14 +1,20 @@
 import { FaHeart, FaStar } from "react-icons/fa";
 import laptopImg from "../../assets/laptop.png";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({
   product = {},
   likedProducts = [],
   toggleHeart = () => { },
 }) => {
+
+  const navigate = useNavigate();
   return (
     <div
-      className="bg-white border border-gray-300 rounded-[20px] w-full max-w-[290px] h-[260px] p-5 relative flex flex-col transition-all duration-300 hover:shadow-md "
+      onClick={() =>
+        navigate(`/product/${product?._id || 1}`)
+      }
+      className="bg-white border border-gray-300 rounded-[20px] w-full max-w-[290px] h-[260px] p-5 relative flex flex-col transition-all duration-300 hover:shadow-md cursor-pointer"
     >
       {/* Wishlist Button */}
       <button

@@ -3,14 +3,13 @@ import {
   FaShoppingCart,
 } from "react-icons/fa";
 
-const Navbar = () => {
+const Navbar = ({ setWishlistOpen }) => {
   return (
     <div className="bg-[#003f63] h-16 flex items-center justify-between px-10">
 
       <div></div>
 
       {/* SEARCH */}
-      {/* Added rounded-2xl and overflow-hidden to the parent */}
       <div className="hidden md:flex mx-10 max-w-sm w-full">
         <div className="flex w-full h-10 rounded-xl overflow-hidden">
           <input
@@ -29,10 +28,13 @@ const Navbar = () => {
      onChange={(e) => setSearch(e.target.value)} */}
 
       <div className="flex items-center gap-6 text-white text-sm">
-        <div className="flex items-center gap-2">
+        <button
+          onClick={() => setWishlistOpen(true)}
+          className="flex items-center gap-2"
+        >
           <FaHeart />
           Wishlist
-        </div>
+        </button>
 
         <div>Sign In</div>
 
