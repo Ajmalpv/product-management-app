@@ -1,10 +1,16 @@
 import ProductCard from "./ProductCard";
 import { useState } from "react";
 import AddProductModal from "../modals/AddProductModal";
+import AddCategoryModal from "../modals/AddCategoryModal";
+import AddSubCategoryModal from "../modals/AddSubCategoryModal";
 
 const ProductGrid = () => {
     const products = [1, 2, 3, 4, 5, 6];
     const [showAddProduct, setShowAddProduct] = useState(false);
+
+    const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+
+    const [showAddSubCategoryModal, setShowAddSubCategoryModal] = useState(false);
 
     return (
         <div className="flex-1">
@@ -14,25 +20,20 @@ const ProductGrid = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-
-                    <button
-                        className="bg-[#F4A300] text-white px-6 py-2.5 rounded-xl font-medium hover:bg-[#d89000] transition">
-                        Add Category
+                    <button className="bg-[#F4A300] text-white px-6 py-2.5 rounded-xl font-medium hover:bg-[#d89000] transition"
+                        onClick={() =>
+                            setShowAddCategoryModal(true)
+                        }
+                    >
+                        Add category
                     </button>
 
-                    <button
-                        className="
-              bg-[#F4A300]
-              text-white
-              px-6
-              py-2.5
-              rounded-xl
-              font-medium
-              hover:bg-[#d89000]
-              transition
-            "
+                    <button className=" bg-[#F4A300] text-white  px-6 py-2.5 rounded-xl font-medium hover:bg-[#d89000] transition"
+                        onClick={() =>
+                            setShowAddSubCategoryModal(true)
+                        }
                     >
-                        Add Sub Category
+                        Add sub category
                     </button>
 
                     <button
@@ -94,6 +95,18 @@ const ProductGrid = () => {
             <AddProductModal
                 isOpen={showAddProduct}
                 onClose={() => setShowAddProduct(false)}
+            />
+            <AddCategoryModal
+                isOpen={showAddCategoryModal}
+                onClose={() =>
+                    setShowAddCategoryModal(false)
+                }
+            />
+            <AddSubCategoryModal
+                isOpen={showAddSubCategoryModal}
+                onClose={() =>
+                    setShowAddSubCategoryModal(false)
+                }
             />
 
         </div>
