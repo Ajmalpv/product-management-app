@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 
 import Navbar from "../components/home/Navbar";
 import WishlistSidebar from "../components/wishlist/WishlistSidebar";
-import laptopImg from "../assets/laptop.png";
 
 const MainLayout = () => {
     const [wishlistOpen, setWishlistOpen] = useState(false);
