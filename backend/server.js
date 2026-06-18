@@ -4,6 +4,10 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 
 import connectDB from "./config/db.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import subCategoryRoutes from "./routes/subCategoryRoutes.js";
+import path from "path";
+import productRoutes from "./routes/productRoutes.js";
 
 dotenv.config();
 
@@ -15,6 +19,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/subcategories", subCategoryRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running...");
