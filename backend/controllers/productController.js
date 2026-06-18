@@ -113,3 +113,72 @@ export const deleteProduct = async (
     });
   }
 };
+
+// Update Product
+export const updateProduct = async (
+  req,
+  res
+) => {
+  try {
+    const {
+      productName,
+      description,
+      subCategory,
+      variants,
+    } = req.body;
+
+    const product =
+      await Product.findById(
+        req.params.id
+      );
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    let imagePaths =
+      product.images;
+
+    if (
+      req.files &&
+      req.files.length > 0
+    ) {
+      imagePaths =
+        req.files.map(
+          (file) => file.filename
+        );
+    }
+
+    product.productName =
+      productName;
+
+    product.description =
+      description;
+
+    product.subCategory =
+      subCategory;
+
+    product.variants =
+      JSON.parse(variants);
+
+    product.images =
+      imagePaths;
+
+    const updatedProduct =
+      await product.save();
+
+    res.status(200).json({
+      success: true,
+      product: updatedProduct,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
