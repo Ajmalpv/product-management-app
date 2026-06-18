@@ -5,7 +5,7 @@ const ProductGallery = ({ product }) => {
   const images =
     product?.images?.map(
       (image) =>
-        `http://localhost:5000/uploads/${image}`
+        `${import.meta.env.VITE_API_BASE_URL}/uploads/${image}`
     ) || [];
 
   const [selectedImage, setSelectedImage] =

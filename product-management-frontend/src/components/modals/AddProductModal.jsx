@@ -32,6 +32,7 @@ const AddProductModal = ({
             setVariants(
                 product.variants || []
             );
+            setImages(product.images || []);
         }
 
     }, [product]);
@@ -133,10 +134,16 @@ const AddProductModal = ({
             );
 
             images.forEach((image) => {
-                formData.append(
-                    "images",
-                    image
-                );
+
+                if (image instanceof File) {
+
+                    formData.append(
+                        "images",
+                        image
+                    );
+
+                }
+
             });
 
             if (product) {
@@ -383,17 +390,20 @@ const AddProductModal = ({
 
                         <div>
                             <div className="flex gap-4 flex-wrap">
-                                {images.map(
-                                    (image, index) => (
-                                        <img
-                                            key={index}
-                                            src={URL.createObjectURL(
-                                                image
-                                            )}
-                                            alt=""
-                                            className="w-24 h-24 border rounded-lg object-cover" />
-                                    )
-                                )}
+                                {images.map((image, index) => (
+
+                                    <img
+                                        key={index}
+                                        src={
+                                            typeof image === "string"
+                                                ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${image}`
+                                                : URL.createObjectURL(image)
+                                        }
+                                        alt=""
+                                        className="w-24 h-24 border rounded-lg object-cover"
+                                    />
+
+                                ))}
 
                                 <label
                                     className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer">
