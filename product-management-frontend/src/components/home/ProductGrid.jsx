@@ -13,6 +13,9 @@ const ProductGrid = ({
     setWishlistItems,
 }) => {
     const [products, setProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const productsPerPage = 6;
     const [showAddProduct, setShowAddProduct] = useState(false);
 
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -63,6 +66,23 @@ const ProductGrid = ({
                 matchesSubCategory
             );
         });
+
+    const totalPages = Math.ceil(
+        filteredProducts.length / productsPerPage
+    );
+
+    const startIndex =
+        (currentPage - 1) * productsPerPage;
+
+    const currentProducts =
+        filteredProducts.slice(
+            startIndex,
+            startIndex + productsPerPage
+        );
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, selectedSubCategory]);
     return (
         <div className="flex-1">
 
@@ -103,7 +123,7 @@ const ProductGrid = ({
 
                 {filteredProducts.length > 0 ? (
 
-                    filteredProducts.map((product) => (
+                    currentProducts.map((product) => (
                         <ProductCard
                             key={product._id}
                             product={product}
@@ -126,27 +146,71 @@ const ProductGrid = ({
             <div className="flex justify-between items-center mt-10">
 
                 <p className="text-sm text-gray-500">
-                    10 of 456 items
+                    Showing {currentProducts.length} of {filteredProducts.length} products
                 </p>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
 
-                    <button className="w-8 h-8 rounded-full bg-[#F4A300] text-white">
-                        1
-                    </button>
+                    {Array.from(
+                        {
+                            length: Math.min(
+                                totalPages,
+                                5
+                            )
+                        },
+                        (_, index) => index + 1
+                    ).map((page) => (
 
-                    <button>2</button>
-                    <button>3</button>
-                    <button>4</button>
-                    <button>5</button>
+                        <button
+                            key={page}
+                            onClick={() =>
+                                setCurrentPage(page)
+                            }
+                            className={
+                                currentPage === page
+                                    ? `
+                        w-9
+                        h-9
+                        rounded-full
+                        bg-[#F4A300]
+                        text-white
+                        font-medium
+                        flex
+                        items-center
+                        justify-center
+                      `
+                                    : `
+                        text-[#F4A300]
+                        font-medium
+                        hover:text-[#d89000]
+                        transition
+                      `
+                            }
+                        >
+                            {page}
+                        </button>
 
-                    <span>...</span>
+                    ))}
 
-                    <button>10</button>
+                    {totalPages > 5 && (
+                        <>
+                            <span className="text-[#F4A300]">
+                                ...
+                            </span>
+
+                            <button
+                                onClick={() =>
+                                    setCurrentPage(totalPages)
+                                }
+                                className="text-[#F4A300] font-medium"
+                            >
+                                {totalPages}
+                            </button>
+                        </>
+                    )}
 
                 </div>
-
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-white">
                     Show 10 rows
                 </p>
 

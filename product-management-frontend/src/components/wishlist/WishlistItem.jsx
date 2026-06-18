@@ -9,7 +9,7 @@ const WishlistItem = ({
 
     const imageUrl =
         product?.images?.length > 0
-            ? `http://localhost:5000/uploads/${product.images[0]}`
+            ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${product.images[0]}`
             : "https://via.placeholder.com/100";
 
     return (
