@@ -1,13 +1,25 @@
-import { useState } from "react";
-import laptopImg from "../../assets/Laptop.png";
+import { useState, useEffect } from "react";
 
-const ProductGallery = () => {
-  const [selectedImage, setSelectedImage] = useState(laptopImg);
+const ProductGallery = ({ product }) => {
 
-  const images = [laptopImg, laptopImg];
+  const images =
+    product?.images?.map(
+      (image) =>
+        `http://localhost:5000/uploads/${image}`
+    ) || [];
+
+  const [selectedImage, setSelectedImage] =
+    useState(images[0]);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      setSelectedImage(images[0]);
+    }
+  }, [product]);
 
   return (
     <div>
+
       {/* Main Image */}
       <div
         className="
@@ -24,7 +36,7 @@ const ProductGallery = () => {
       >
         <img
           src={selectedImage}
-          alt="Product"
+          alt={product?.productName}
           className="
             max-w-full
             max-h-full
@@ -36,10 +48,14 @@ const ProductGallery = () => {
 
       {/* Thumbnails */}
       <div className="flex gap-4 mt-4">
+
         {images.map((image, index) => (
+
           <div
             key={index}
-            onClick={() => setSelectedImage(image)}
+            onClick={() =>
+              setSelectedImage(image)
+            }
             className="
               border
               border-gray-300
@@ -57,7 +73,7 @@ const ProductGallery = () => {
           >
             <img
               src={image}
-              alt={`Thumbnail ${index + 1}`}
+              alt=""
               className="
                 w-full
                 h-full
@@ -65,8 +81,11 @@ const ProductGallery = () => {
               "
             />
           </div>
+
         ))}
+
       </div>
+
     </div>
   );
 };

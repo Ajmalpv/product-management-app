@@ -1,24 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import VariantSelector from "./VariantSelector";
 import QuantitySelector from "./QuantitySelector";
 
-const ProductInfo = () => {
+const ProductInfo = ({ product, onEdit }) => {
     const [selectedRam, setSelectedRam] =
-        useState("4 GB");
+        useState("");
+
+    useEffect(() => {
+        if (product?.variants?.length) {
+            setSelectedRam(
+                product.variants[0].ram
+            );
+        }
+    }, [product]);
+
+    const selectedVariant =
+        product?.variants?.find(
+            (variant) =>
+                variant.ram === selectedRam
+        );
 
     const [quantity, setQuantity] =
         useState(1);
+
+    console.log(product?.variants);
 
     return (
         <div>
 
             <h1 className="text-[28px] font-bold text-[#003F63] mb-4">
-                HP AMD Ryzen 3
+                {product?.productName}
             </h1>
 
             <p className="text-3xl font-bold text-gray-700 mb-6">
-                $529.99
+                ${selectedVariant?.price}
             </p>
 
             <div className="flex items-center gap-3 mb-3">
@@ -27,12 +43,16 @@ const ProductInfo = () => {
                 </span>
 
                 <span className="text-green-500">
-                    ✓ In stock
+                    ✓ in stock
                 </span>
             </div>
 
             <p className="text-gray-500 mb-8">
-                Hurry up! only 34 product left in stock!
+                Hurry up! only {selectedVariant?.quantity} product left in stock!
+            </p>
+
+            <p className="text-gray-500 mb-8">
+                {product?.description}
             </p>
 
             <hr className="mb-8 text-gray-500" />
@@ -44,6 +64,7 @@ const ProductInfo = () => {
                 </p>
 
                 <VariantSelector
+                    variants={product?.variants}
                     selected={selectedRam}
                     setSelected={setSelectedRam}
                 />
@@ -54,7 +75,7 @@ const ProductInfo = () => {
                 <span className="font-medium">
                     Quantity :
                 </span>
-        
+
                 <QuantitySelector
                     quantity={quantity}
                     setQuantity={setQuantity}
@@ -64,28 +85,13 @@ const ProductInfo = () => {
             <div className="flex items-center gap-4">
 
                 <button
-                    className="
-            bg-[#F4A300]
-            text-white
-            px-8
-            py-3
-            rounded-xl
-            font-medium
-          "
-                >
+                    onClick={onEdit}
+                    className="bg-[#F4A300] text-white px-8 py-3 rounded-xl font-medium ">
                     Edit Product
                 </button>
 
                 <button
-                    className="
-            bg-[#F4A300]
-            text-white
-            px-8
-            py-3
-            rounded-xl
-            font-medium
-          "
-                >
+                    className="bg-[#F4A300] text-white px-8 py-3 rounded-xl font-medium">
                     Buy It Now
                 </button>
 

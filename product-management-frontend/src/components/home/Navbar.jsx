@@ -2,8 +2,25 @@ import {
   FaHeart,
   FaShoppingCart,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ setWishlistOpen }) => {
+const Navbar = ({
+  setWishlistOpen,
+  search,
+  setSearch,
+  wishlistItems,
+}) => {
+
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/login");
+  };
   return (
     <div className="bg-[#003f63] h-16 flex items-center justify-between px-10">
 
@@ -15,6 +32,10 @@ const Navbar = ({ setWishlistOpen }) => {
           <input
             type="text"
             placeholder="Search anything"
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
             className="flex-1 px-4 bg-white text-black outline-none"
           />
 
@@ -30,13 +51,35 @@ const Navbar = ({ setWishlistOpen }) => {
       <div className="flex items-center gap-6 text-white text-sm">
         <button
           onClick={() => setWishlistOpen(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 relative"
         >
           <FaHeart />
-          Wishlist
+
+          <span>Wishlist</span>
+
+          {wishlistItems?.length > 0 && (
+            <span
+              className="absolute -top-2 -right-4 min-w-[18px] h-[18px]  px-1  rounded-full bg-[#F4A300] text-white text-[10px] flex items-center justify-center">
+              {wishlistItems.length}
+            </span>
+          )}
         </button>
 
-        <div>Sign In</div>
+        {token ? (
+          <button
+            onClick={handleLogout}
+            className="hover:text-[#F4A300] transition"
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            className="hover:text-[#F4A300] transition"
+          >
+            Sign In
+          </button>
+        )}
 
         <div className="flex items-center gap-2">
           <FaShoppingCart />

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { Check } from "lucide-react";
+import { getSubCategories } from "../../services/subCategoryService";
+import { getCategories } from "../../services/categoryService";
 
 const FilterCheckbox = ({ label }) => {
   const [checked, setChecked] = useState(false);
@@ -32,14 +34,48 @@ const FilterCheckbox = ({ label }) => {
   );
 };
 
-const CategorySidebar = () => {
-  const [openCategory, setOpenCategory] = useState("Laptop");
+const CategorySidebar = ({
+  selectedSubCategory,
+  setSelectedSubCategory,
+}) => {
+  const [openCategory, setOpenCategory] = useState(null);
+
+  const [categories, setCategories] = useState([]);
+
+  const [subCategories, setSubCategories] = useState([]);
 
   const toggleCategory = (category) => {
     setOpenCategory(
       openCategory === category ? null : category
     );
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const categoryData =
+          await getCategories();
+
+        const subCategoryData =
+          await getSubCategories();
+
+        setCategories(
+          categoryData.categories
+        );
+
+        setSubCategories(
+          subCategoryData.subCategories
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="w-[360px] px-16 py-10">
@@ -58,105 +94,86 @@ const CategorySidebar = () => {
 
         {/* All Categories */}
         <li
-          className="
-            font-medium
-            cursor-pointer
-            hover:text-[#F4A300]
-            transition
-          "
-        >
+          onClick={() =>
+            setSelectedSubCategory("")}
+          className={` font-medium cursor-pointer transition ${!selectedSubCategory
+            ? "text-[#F4A300]"
+            : ""}`}>
           All Categories
         </li>
-
-        {/* Laptop */}
-        <li>
-          <div
-            onClick={() => toggleCategory("Laptop")}
-            className="flex items-center justify-between cursor-pointer"
-          >
-            <span className="font-medium">
-              Laptop
-            </span>
-
-            {openCategory === "Laptop" ? (
-              <FaChevronDown size={12} />
-            ) : (
-              <FaChevronRight size={12} />
-            )}
-          </div>
-
-          {openCategory === "Laptop" && (
-            <ul className="ml-6 mt-3 space-y-3 text-gray-700">
-              <li>
-                <FilterCheckbox label="HP" />
-              </li>
-
-              <li>
-                <FilterCheckbox label="Dell" />
-              </li>
-            </ul>
-          )}
-        </li>
-
         {/* Tablet */}
-        <li>
-          <div
-            onClick={() => toggleCategory("Tablet")}
-            className="flex items-center justify-between cursor-pointer"
-          >
-            <span className="font-medium">
-              Tablet
-            </span>
+        {categories.map((category) => (
 
-            {openCategory === "Tablet" ? (
-              <FaChevronDown size={12} />
-            ) : (
-              <FaChevronRight size={12} />
+          <li key={category._id}>
+
+            <div
+              onClick={() =>
+                toggleCategory(category._id)
+              }
+              className="flex items-center justify-between cursor-pointer"
+            >
+              <span className="font-medium">
+                {category.name}
+              </span>
+
+              {openCategory === category._id ? (
+                <FaChevronDown size={12} />
+              ) : (
+                <FaChevronRight size={12} />
+              )}
+
+            </div>
+
+            {openCategory === category._id && (
+
+              <ul className="ml-6 mt-3 space-y-3 text-gray-700">
+
+                {subCategories
+                  .filter(
+                    (sub) =>
+                      sub.category?._id ===
+                      category._id
+                  )
+                  .map((sub) => (
+
+                    <label
+                      key={sub._id}
+                      onClick={() =>
+                        setSelectedSubCategory(
+                          selectedSubCategory === sub._id
+                            ? ""
+                            : sub._id
+                        )
+                      }
+                      className="flex items-center gap-3 cursor-pointer"
+                    >
+
+                      <div
+                        className={` w-4 h-4 rounded-sm flex items-center justify-center ${selectedSubCategory === sub._id
+                            ? "bg-black"
+                            : "bg-gray-400" } `}>
+                        {selectedSubCategory === sub._id && (
+                          <Check
+                            size={12}
+                            strokeWidth={3}
+                            className="text-white"
+                          />
+                        )}
+                      </div>
+
+                      <span>{sub.name}</span>
+
+                    </label>
+
+                  ))}
+
+              </ul>
+
             )}
-          </div>
 
-          {openCategory === "Tablet" && (
-            <ul className="ml-6 mt-3 space-y-3 text-gray-700">
-              <li>
-                <FilterCheckbox label="Samsung" />
-              </li>
+          </li>
 
-              <li>
-                <FilterCheckbox label="Lenovo" />
-              </li>
-            </ul>
-          )}
-        </li>
-
-        {/* Headphones */}
-        <li>
-          <div
-            onClick={() => toggleCategory("Headphones")}
-            className="flex items-center justify-between cursor-pointer"
-          >
-            <span className="font-medium">
-              Headphones
-            </span>
-
-            {openCategory === "Headphones" ? (
-              <FaChevronDown size={12} />
-            ) : (
-              <FaChevronRight size={12} />
-            )}
-          </div>
-
-          {openCategory === "Headphones" && (
-            <ul className="ml-6 mt-3 space-y-3 text-gray-700">
-              <li>
-                <FilterCheckbox label="Sony" />
-              </li>
-
-              <li>
-                <FilterCheckbox label="JBL" />
-              </li>
-            </ul>
-          )}
-        </li>
+        ))}
 
       </ul>
     </div>

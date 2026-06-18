@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight, ImagePlus, Trash2 } from "lucide-react";
+import { getSubCategories } from "../../services/subCategoryService";
+import { createProduct, updateProduct } from "../../services/productService";
 
 const AddProductModal = ({
     isOpen,
     onClose,
+    product = null,
 }) => {
     const [productName, setProductName] = useState("");
 
     const [description, setDescription] = useState("");
 
     const [subcategory, setSubcategory] = useState("");
+    useEffect(() => {
+
+        if (product) {
+
+            setProductName(
+                product.productName || ""
+            );
+
+            setDescription(
+                product.description || ""
+            );
+
+            setSubcategory(
+                product.subCategory?._id || ""
+            );
+
+            setVariants(
+                product.variants || []
+            );
+        }
+
+    }, [product]);
+    const [subCategories, setSubCategories] = useState([]);
 
     const [variants, setVariants] = useState([
         {
@@ -20,6 +46,33 @@ const AddProductModal = ({
     ]);
 
     const [images, setImages] = useState([]);
+
+    useEffect(() => {
+
+        const fetchSubCategories =
+            async () => {
+
+                try {
+
+                    const data =
+                        await getSubCategories();
+
+                    setSubCategories(
+                        data.subCategories
+                    );
+
+                } catch (error) {
+
+                    console.log(error);
+
+                }
+            };
+
+        if (isOpen) {
+            fetchSubCategories();
+        }
+
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -53,6 +106,75 @@ const AddProductModal = ({
             ...files,
         ]);
     };
+    const handleAddProduct = async () => {
+
+        try {
+
+            const formData = new FormData();
+
+            formData.append(
+                "productName",
+                productName
+            );
+
+            formData.append(
+                "description",
+                description
+            );
+
+            formData.append(
+                "subCategory",
+                subcategory
+            );
+
+            formData.append(
+                "variants",
+                JSON.stringify(variants)
+            );
+
+            images.forEach((image) => {
+                formData.append(
+                    "images",
+                    image
+                );
+            });
+
+            if (product) {
+
+                await updateProduct(
+                    product._id,
+                    formData
+                );
+
+                alert(
+                    "Product updated successfully"
+                );
+
+            } else {
+
+                await createProduct(
+                    formData
+                );
+
+                alert(
+                    "Product added successfully"
+                );
+            }
+
+            handleDiscard();
+
+            onClose();
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to add product"
+            );
+        }
+    };
 
     const handleDiscard = () => {
         setProductName("");
@@ -83,7 +205,9 @@ const AddProductModal = ({
                 </button>
 
                 <h2 className="text-3xl font-semibold text-center mb-10">
-                    Add Product
+                    {product
+                        ? "Edit Product"
+                        : "Add Product"}
                 </h2>
 
                 <div className="space-y-8">
@@ -188,8 +312,8 @@ const AddProductModal = ({
                                         onClick={() => handleDeleteVariant(index)}
                                         disabled={variants.length === 1}
                                         className={`w-10 h-10 flex items-center justify-center rounded-lg transition ${variants.length > 1
-                                                ? "text-red-500 hover:bg-red-50"
-                                                : "opacity-0 cursor-default"
+                                            ? "text-red-500 hover:bg-red-50"
+                                            : "opacity-0 cursor-default"
                                             }`}
                                     >
                                         <Trash2 size={18} />
@@ -219,8 +343,20 @@ const AddProductModal = ({
                             value={subcategory}
                             onChange={(e) => setSubcategory(e.target.value)}
                             className="border rounded-lg px-4 py-3">
-                            <option>HP</option>
-                            <option>Dell</option>
+
+                            <option value="">
+                                Select Sub Category
+                            </option>
+
+                            {subCategories.map((sub) => (
+                                <option
+                                    key={sub._id}
+                                    value={sub._id}
+                                >
+                                    {sub.name}
+                                </option>
+                            ))}
+
                         </select>
                     </div>
 
@@ -280,8 +416,11 @@ const AddProductModal = ({
                     <div className="flex justify-end gap-4">
 
                         <button
+                            onClick={handleAddProduct}
                             className="bg-[#F4A300] text-white px-8 py-3 rounded-lg">
-                            ADD
+                            {product
+                                ? "UPDATE"
+                                : "ADD"}
                         </button>
 
                         <button

@@ -1,14 +1,56 @@
 import { FaHeart, FaStar } from "react-icons/fa";
-import laptopImg from "../../assets/laptop.png";
 import { useNavigate } from "react-router-dom";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../services/wishlistService";
 
 const ProductCard = ({
   product = {},
-  likedProducts = [],
-  toggleHeart = () => { },
+  wishlistItems = [],
+  setWishlistItems,
 }) => {
 
   const navigate = useNavigate();
+  const isWishlisted =
+    wishlistItems.some(
+      (item) => item._id === product._id
+    );
+
+  const handleWishlist = async (e) => {
+    e.stopPropagation();
+
+    try {
+      if (isWishlisted) {
+        await removeFromWishlist(
+          product._id
+        );
+
+        setWishlistItems(
+          wishlistItems.filter(
+            (item) =>
+              item._id !== product._id
+          )
+        );
+      } else {
+        await addToWishlist(
+          product._id
+        );
+
+        setWishlistItems([
+          ...wishlistItems,
+          product,
+        ]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const imageUrl =
+    product?.images?.length > 0
+      ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${product.images[0]}`
+      : null;
   return (
     <div
       onClick={() =>
@@ -18,10 +60,7 @@ const ProductCard = ({
     >
       {/* Wishlist Button */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleHeart(product?._id);
-        }}
+        onClick={handleWishlist}
         className="
           absolute
           top-5
@@ -38,7 +77,7 @@ const ProductCard = ({
         <FaHeart
           size={13}
           className={
-            likedProducts?.includes(product?._id)
+            isWishlisted
               ? "text-red-500"
               : "text-[#003F63]"
           }
@@ -48,9 +87,12 @@ const ProductCard = ({
       {/* Product Image */}
       <div className="flex justify-center mt-2 mb-2">
         <img
-          src={laptopImg}
-          alt="Laptop"
-          className="w-[130px] object-contain"
+          src={
+            imageUrl ||
+            "https://via.placeholder.com/130"
+          }
+          alt={product?.productName}
+          className="w-[130px] h-[100px] object-contain"
         />
       </div>
 

@@ -4,47 +4,50 @@ import CategorySidebar from "../components/home/CategorySidebar";
 import ProductGrid from "../components/home/ProductGrid";
 import WishlistSidebar from "../components/wishlist/WishlistSidebar";
 import laptopImg from "../assets/laptop.png";
+import { useOutletContext } from "react-router-dom";
 
 const Home = () => {
 
-  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const {
+    search,
+    selectedSubCategory,
+    setSelectedSubCategory,
+    wishlistItems,
+    setWishlistItems,
+  } = useOutletContext();
 
-  const [wishlistItems, setWishlistItems] = useState([
-    {
-      id: 1,
-      name: "HP AMD Ryzen 3",
-      price: 529.99,
-      image: laptopImg,
-    },
-    {
-      id: 2,
-      name: "HP AMD Ryzen 3",
-      price: 529.99,
-      image: laptopImg,
-    },
-  ]);
+  console.log(selectedSubCategory);
+
 
   return (
     <div className="min-h-screen bg-[#1f1f1f]">
       <div className="bg-white min-h-[90vh]">
 
-        <Navbar
+        {/* <Navbar
           setWishlistOpen={setWishlistOpen}
-        />
+        /> */}
 
         <div className="flex">
-          <CategorySidebar />
-          <ProductGrid />
+          <CategorySidebar
+            selectedSubCategory={selectedSubCategory}
+            setSelectedSubCategory={setSelectedSubCategory}
+          />
+          <ProductGrid
+            search={search}
+            selectedSubCategory={selectedSubCategory}
+            wishlistItems={wishlistItems}
+            setWishlistItems={setWishlistItems}
+          />
         </div>
 
       </div>
 
-      <WishlistSidebar
+      {/* <WishlistSidebar
         isOpen={wishlistOpen}
         onClose={() => setWishlistOpen(false)}
         wishlistItems={wishlistItems}
         setWishlistItems={setWishlistItems}
-      />
+      /> */}
     </div>
   );
 };

@@ -1,22 +1,73 @@
 import ProductCard from "./ProductCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getProducts } from "../../services/productService";
 import AddProductModal from "../modals/AddProductModal";
 import AddCategoryModal from "../modals/AddCategoryModal";
 import AddSubCategoryModal from "../modals/AddSubCategoryModal";
 
-const ProductGrid = () => {
-    const products = [1, 2, 3, 4, 5, 6];
+
+const ProductGrid = ({
+    search,
+    selectedSubCategory,
+    wishlistItems,
+    setWishlistItems,
+}) => {
+    const [products, setProducts] = useState([]);
     const [showAddProduct, setShowAddProduct] = useState(false);
 
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
 
     const [showAddSubCategoryModal, setShowAddSubCategoryModal] = useState(false);
 
+    useEffect(() => {
+        const fetchProducts =
+            async () => {
+
+                try {
+
+                    const data =
+                        await getProducts();
+
+                    setProducts(
+                        data.products
+                    );
+
+                } catch (error) {
+
+                    console.log(error);
+
+                }
+            };
+
+        fetchProducts();
+
+    }, []);
+
+    const filteredProducts =
+        products.filter((product) => {
+
+            const matchesSearch =
+                product.productName
+                    .toLowerCase()
+                    .includes(
+                        search.toLowerCase()
+                    );
+
+            const matchesSubCategory =
+                !selectedSubCategory ||
+                product.subCategory?._id ===
+                selectedSubCategory;
+
+            return (
+                matchesSearch &&
+                matchesSubCategory
+            );
+        });
     return (
         <div className="flex-1">
 
             {/* Top Section */}
-            <div className="flex justify-end items-center mb-8 mt-4 pr-8">
+            <div className="flex justify-end items-center mb-13 mt-4 pr-8">
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
@@ -48,18 +99,27 @@ const ProductGrid = () => {
             </div>
 
             {/* Product Cards */}
-            <div
-                className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-3
-          gap-8
-        "
-            >
-                {products.map((item) => (
-                    <ProductCard key={item} />
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+                {filteredProducts.length > 0 ? (
+
+                    filteredProducts.map((product) => (
+                        <ProductCard
+                            key={product._id}
+                            product={product}
+                            wishlistItems={wishlistItems}
+                            setWishlistItems={setWishlistItems}
+                        />
+                    ))
+
+                ) : (
+
+                    <div className="col-span-full text-center py-20 text-gray-500 text-lg">
+                        No products found
+                    </div>
+
+                )}
+
             </div>
 
             {/* Pagination */}

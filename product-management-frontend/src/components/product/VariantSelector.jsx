@@ -1,31 +1,33 @@
 const VariantSelector = ({
+  variants = [],
   selected,
   setSelected,
 }) => {
-  const variants = ["4 GB", "8 GB", "16 GB"];
-
   return (
-    <div className="flex gap-3">
-      {variants.map((item) => (
+    <div className="flex gap-3 flex-wrap">
+      {variants.map((variant) => (
         <button
-          key={item}
-          onClick={() => setSelected(item)}
+          key={variant.ram}
+          onClick={() =>
+            setSelected(variant.ram)
+          }
           className={`
             min-w-[60px]
             h-[32px]
             text-sm
             bg-gray-200
+            px-3
             transition-all
             duration-200
 
             ${
-              selected === item
+              selected === variant.ram
                 ? "border border-gray-700"
                 : "border border-transparent"
             }
           `}
         >
-          {item}
+          {variant.ram}
         </button>
       ))}
     </div>

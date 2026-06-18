@@ -1,18 +1,30 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { createCategory } from "../../services/categoryService";
 
 const AddCategoryModal = ({ isOpen, onClose }) => {
     const [categoryName, setCategoryName] = useState("");
 
     if (!isOpen) return null;
 
-    const handleAddCategory = () => {
+    const handleAddCategory = async () => {
         if (!categoryName.trim()) return;
 
-        console.log("New Category:", categoryName);
+        try {
+            await createCategory(categoryName);
 
-        setCategoryName("");
-        onClose();
+            alert("Category added successfully");
+
+            setCategoryName("");
+
+            onClose();
+
+        } catch (error) {
+            alert(
+                error.response?.data?.message ||
+                "Failed to add category"
+            );
+        }
     };
 
     const handleDiscard = () => {

@@ -1,8 +1,47 @@
 import AuthPanel from "../components/auth/AuthPanel";
 import FloatingShapes from "../components/auth/FloatingShapes";
 import { FaEnvelope, FaLock } from "react-icons/fa";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
 
 const Login = () => {
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+    const handleLogin = async () => {
+        try {
+            const data = await loginUser(formData);
+
+            localStorage.setItem(
+                "token",
+                data.token
+            );
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(data.user)
+            );
+
+            navigate("/home");
+
+        } catch (error) {
+            alert(
+                error.response?.data?.message ||
+                "Login Failed"
+            );
+        }
+    };
     return (
         <div className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-6">
             <div className="w-full max-w-6xl h-[550px] bg-white rounded-xl overflow-hidden flex shadow-2xl">
@@ -22,6 +61,9 @@ const Login = () => {
 
                                 <input
                                     type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     placeholder="Email"
                                     className="w-full bg-gray-100 py-3 pl-12 pr-4 rounded-md outline-none"
                                 />
@@ -32,6 +74,9 @@ const Login = () => {
 
                                 <input
                                     type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     placeholder="Password"
                                     className="w-full bg-gray-100 py-3 pl-12 pr-4 rounded-md outline-none"
                                 />
@@ -44,7 +89,10 @@ const Login = () => {
                             </div>
 
                             <div className="flex justify-center pt-4">
-                                <button className="bg-[#E8A10A] text-white px-14 py-3 rounded-full font-semibold hover:scale-105 transition">
+                                <button
+                                    onClick={handleLogin}
+                                    className="bg-[#E8A10A] text-white px-14 py-3 rounded-full font-semibold hover:scale-105 transition"
+                                >
                                     SIGN IN
                                 </button>
                             </div>

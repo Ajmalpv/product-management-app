@@ -1,24 +1,75 @@
 import { useState } from "react";
 import { X, ChevronDown } from "lucide-react";
+import { useEffect } from "react";
+
+import { getCategories } from "../../services/categoryService";
+
+import { createSubCategory } from "../../services/subCategoryService";
 
 const AddSubCategoryModal = ({ isOpen, onClose }) => {
     const [category, setCategory] = useState("");
+    const [categories, setCategories] = useState([]);
     const [subCategoryName, setSubCategoryName] = useState("");
+
+    useEffect(() => {
+
+        const fetchCategories =
+            async () => {
+                try {
+
+                    const data =
+                        await getCategories();
+
+                    setCategories(
+                        data.categories
+                    );
+
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+
+        if (isOpen) {
+            fetchCategories();
+        }
+
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
-    const handleAddSubCategory = () => {
-        if (!category || !subCategoryName.trim()) return;
+    const handleAddSubCategory =
+        async () => {
 
-        console.log({
-            category,
-            subCategoryName,
-        });
+            if (
+                !category ||
+                !subCategoryName.trim()
+            ) return;
 
-        setCategory("");
-        setSubCategoryName("");
-        onClose();
-    };
+            try {
+
+                await createSubCategory({
+                    name: subCategoryName,
+                    category,
+                });
+
+                alert(
+                    "Sub category added successfully"
+                );
+
+                setCategory("");
+                setSubCategoryName("");
+
+                onClose();
+
+            } catch (error) {
+
+                alert(
+                    error.response?.data?.message ||
+                    "Failed to add sub category"
+                );
+
+            }
+        };
 
     const handleDiscard = () => {
         setCategory("");
@@ -62,17 +113,14 @@ const AddSubCategoryModal = ({ isOpen, onClose }) => {
                             Select category
                         </option>
 
-                        <option value="Laptop">
-                            Laptop
-                        </option>
-
-                        <option value="Tablet">
-                            Tablet
-                        </option>
-
-                        <option value="Headphones">
-                            Headphones
-                        </option>
+                        {categories.map((cat) => (
+                            <option
+                                key={cat._id}
+                                value={cat._id}
+                            >
+                                {cat.name}
+                            </option>
+                        ))}
 
                     </select>
 

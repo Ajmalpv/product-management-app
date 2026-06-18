@@ -1,4 +1,5 @@
 import WishlistItem from "./WishlistItem";
+import { removeFromWishlist } from "../../services/wishlistService";
 
 
 const WishlistSidebar = ({
@@ -10,12 +11,23 @@ const WishlistSidebar = ({
 
     if (!isOpen) return null;
 
-    const handleRemove = (id) => {
-        setWishlistItems(
-            wishlistItems.filter(
-                (item) => item.id !== id
-            )
-        );
+    const handleRemove = async (id) => {
+        try {
+
+            await removeFromWishlist(id);
+
+            setWishlistItems(
+                wishlistItems.filter(
+                    (item) =>
+                        item._id !== id
+                )
+            );
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
     };
 
     return (
@@ -55,7 +67,7 @@ const WishlistSidebar = ({
 
                         wishlistItems.map((product) => (
                             <WishlistItem
-                                key={product.id}
+                                key={product._id}
                                 product={product}
                                 onRemove={handleRemove}
                             />
